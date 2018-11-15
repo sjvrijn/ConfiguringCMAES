@@ -13,11 +13,11 @@ from itertools import product
 from multiprocessing import Pool
 
 from bbob import bbobbenchmarks, fgeneric
-from modea import Config
+import Config
 from modea.Algorithms import _customizedES
 from modea.Utils import getOpts, getVals, options, initializable_parameters, \
     chunkListByLength, guaranteeFolderExists, reprToString, ESFitness
-from modea.local import datapath
+from local import datapath
 
 try:
     from mpi4py import MPI
@@ -312,7 +312,7 @@ def runCustomizedES(representation, iid, rep, ndim, fid, budget):
     guaranteeFolderExists(datapath + datapath_ext)
 
     f = fgeneric.LoggingFunction(datapath + datapath_ext, **bbob_opts)
-    f_target = f.setfun(*bbobbenchmarks.instantiate(fid, iinstance=iid),dftarget=Config.default_target).ftarget
+    f_target = f.setfun(*bbobbenchmarks.instantiate(fid, iinstance=iid), dftarget=Config.default_target).ftarget
 
     # Interpret the representation into parameters for the ES
     opts = getOpts(representation[:len(options)])

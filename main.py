@@ -10,14 +10,14 @@ from datetime import datetime
 from functools import partial
 from copy import copy
 from bbob import bbobbenchmarks
-from modea import Config
+import Config
 from modea.Algorithms import _MIES
 from EvolvingES import ensureFullLengthRepresentation, evaluateCustomizedESs, _displayDuration, MPIpool_evaluate
 from modea.Individual import MixedIntIndividual
 from modea.Parameters import Parameters
 from modea.Utils import ESFitness, getOpts, options, num_options_per_module, \
-    getBitString, getPrintName, create_bounds, guaranteeFolderExists, chunkListByLength
-from modea.local import non_bbob_datapath
+    getBitString, getPrintName, create_bounds, guaranteeFolderExists
+from local import non_bbob_datapath
 
 # Sets of noise-free and noisy benchmarks
 free_function_ids = bbobbenchmarks.nfreeIDs
@@ -130,7 +130,6 @@ def _bruteForce(ndim, fid, parallel=1, part=None):
     from collections import Counter
     from itertools import product
     from datetime import datetime
-    import cPickle
 
     '''
     progress_fname = non_bbob_datapath + '{}_f{}.prog'.format(ndim, fid)
