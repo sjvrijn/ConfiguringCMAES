@@ -1,3 +1,5 @@
+[![Gitter](https://badges.gitter.im/pyModEA/configuring-cmaes.svg)](https://gitter.im/pyModEA/configuring-cmaes?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 # Summary #
 This repository contains the configurable CMA-ES experiments code that uses the Modular EA framework. The framework is available separately as [ModEA](https://github.com/sjvrijn/ModEA).
 
