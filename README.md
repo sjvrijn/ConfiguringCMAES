@@ -23,6 +23,19 @@ The most important function in `EvolvingES.py` is`runCustomizedES(representation
 
 To simplify large runs of experiments, the `evaluateCustomizedESs(...):` function also exists, which tries to automatically parallelize the running of multiple representations over multiple instance ID's of a fixed `fid` and `ndim`.
 
+# Citation #
+To cite this work, please use the following reference:
+* [Evolving the Structure of Evolution Strategies. Sander van Rijn, Hao Wang, Matthijs van Leeuwen, Thomas Bäck. IEEE SSCI December 6-9 2016, Athens, Greece.](https://ieeexplore.ieee.org/document/7850138)
+```
+@INPROCEEDINGS{vanrijn2016,
+    author={S. {van Rijn} and H. {Wang} and M. {van Leeuwen} and T. {Bäck}},
+    booktitle={2016 IEEE Symposium Series on Computational Intelligence (SSCI)}, 
+    title={Evolving the structure of Evolution Strategies}, 
+    year={2016},
+    doi={10.1109/SSCI.2016.7850138},
+}
+```
+
 
 # References #
  * [Evolving the Structure of Evolution Strategies. Sander van Rijn, Hao Wang, Matthijs van Leeuwen, Thomas Bäck. IEEE SSCI December 6-9 2016, Athens, Greece.](https://ieeexplore.ieee.org/document/7850138)
