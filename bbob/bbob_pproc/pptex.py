@@ -321,11 +321,7 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=1e5):
         if float(tmp[-1]) < 0:
             tmp2 = '-' + tmp2
         tmp[-1] = tmp2
-        if len(tmp) > 1 and tmp[-1]:
-            res = 'e'.join(tmp)
-        else:
-            res = tmp[0]
-
+        res = 'e'.join(tmp) if len(tmp) > 1 and tmp[-1] else tmp[0]
     return res
 
 def tableLaTeX(table, spec, extraeol=()):

@@ -312,8 +312,9 @@ def main(argv=None):
             if i.dim not in genericsettings.dimensions_to_display:
                 continue
 
-            if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
-                inset.instancesOfInterest):
+            if {
+                j: i.instancenumbers.count(j) for j in set(i.instancenumbers)
+            } < inset.instancesOfInterest:
                 warnings.warn('The data of %s do not list ' %(i) +
                               'the correct instances ' +
                               'of function F%d.' %(i.funcId))

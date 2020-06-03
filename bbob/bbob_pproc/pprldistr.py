@@ -203,8 +203,11 @@ def caption_single(max_evals_div_dim):
     return caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$')
 
 def caption_two():
-    caption = caption_two_rlbased if genericsettings.runlength_based_targets else caption_two_fixed
-    return caption
+    return (
+        caption_two_rlbased
+        if genericsettings.runlength_based_targets
+        else caption_two_fixed
+    )
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
@@ -216,7 +219,10 @@ def beautifyECDF():
     c = plt.gca().get_children()
     for i in c: # TODO: we only want to extend ECDF lines...
         try:
-            if i.get_drawstyle() == 'steps' and not i.get_linestyle() in ('', 'None'):
+            if i.get_drawstyle() == 'steps' and i.get_linestyle() not in (
+                '',
+                'None',
+            ):
                 xdata = i.get_xdata()
                 ydata = i.get_ydata()
                 if len(xdata) > 0:
@@ -352,9 +358,7 @@ def _plotERTDistr(dsList, target, **plotArgs):
                 x.extend(tmp[1])
                 break
         nn += samplesize
-    res = plotECDF(x, nn, **plotArgs)
-
-    return res
+    return plotECDF(x, nn, **plotArgs)
 
 def _plotRLDistr_old(dsList, target, **plotArgs):
     """Creates run length distributions from a sequence dataSetList.
@@ -398,8 +402,7 @@ def _plotRLDistr_old(dsList, target, **plotArgs):
         pass
     label += '%d/%d' % (len(fsolved), len(funcs))
     kwargs['label'] = kwargs.setdefault('label', label)
-    res = plotECDF(x, nn, **kwargs)
-    return res
+    return plotECDF(x, nn, **kwargs)
 
 def erld_data(dsList, target, max_fun_evals = np.inf):
     """return ``[sorted_runlengths_divided_by_dimension, nb_of_all_runs, functions_ids_found, functions_ids_solved]``
@@ -469,8 +472,7 @@ def plotRLDistr(dsList, target, label = '', max_fun_evals = np.inf,
     kwargs = plotArgs.copy()
     label += ': %d/%d' % (len(fsolved), len(funcs))
     kwargs['label'] = kwargs.setdefault('label', label)
-    res = plotECDF(x, nn, **kwargs)
-    return res
+    return plotECDF(x, nn, **kwargs)
 
 def plotFVDistr(dsList, budget, min_f = 1e-8, **plotArgs):
     """Creates ECDF of final function values plot from a DataSetList.
@@ -499,8 +501,7 @@ def plotFVDistr(dsList, budget, min_f = 1e-8, **plotArgs):
             NotImplementedError('related function vals with respective budget (e.g. ERT(val)) see pplogloss.generateData()')
         x.extend(vals)
         nn += ds.nbRuns()
-    res = plotECDF(x, nn, **plotArgs)
-    return res
+    return plotECDF(x, nn, **plotArgs)
 
 def comp(dsList0, dsList1, targets, isStoringXMax = False,
          outputdir = '', info = 'default', verbose = True):
@@ -570,7 +571,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax = False,
                      markeredgecolor = plt.getp(tmp[-1], 'color'),
                      markerfacecolor = 'none')
 
-        funcs = set(i.funcId for i in dictdim0[d]) | set(i.funcId for i in dictdim1[d])
+        funcs = {i.funcId for i in dictdim0[d]} | {i.funcId for i in dictdim1[d]}
         text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
 
         if not isinstance(targets, pproc.RunlengthBasedTargetValues):
@@ -645,7 +646,7 @@ def plot(dsList, targets = single_target_values, **plotArgs):
         tmp = plotRLDistr(dsList, lambda fun_dim: targets(fun_dim)[j], **tmpplotArgs)
         res.extend(tmp)
     res.append(plt.axvline(x = maxEvalsFactor, color = 'k', **plotArgs))
-    funcs = list(i.funcId for i in dsList)
+    funcs = [i.funcId for i in dsList]
     text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
     res.append(plt.text(0.5, 0.98, text, horizontalalignment = "center",
                         verticalalignment = "top", transform = plt.gca().transAxes))

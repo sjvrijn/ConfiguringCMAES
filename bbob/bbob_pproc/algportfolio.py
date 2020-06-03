@@ -200,10 +200,7 @@ def build(dictAlg, sortedAlg=None):
     for f, i in pp.dictAlgByFun(dictAlg).iteritems():
         for d, j in pp.dictAlgByDim(i).iteritems():
             tmp = []
-            if sortedAlg:
-                tmplist = list(j[k] for k in sortedAlg)
-            else:
-                tmplist = j.values()
+            tmplist = [j[k] for k in sortedAlg] if sortedAlg else j.values()
             for k in tmplist:
                 assert len(k) == 1 # one element list
                 tmp.append(k[0])

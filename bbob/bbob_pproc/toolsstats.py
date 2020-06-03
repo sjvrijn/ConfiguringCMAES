@@ -301,7 +301,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     # should NaNs also be boostrapped?
     argsv = args
     if 1 < 3:
-        for i in range(int(samplesize)):
+        for _ in range(int(samplesize)):
             # relying that idx<len(data)
             idx = np.random.randint(N, size=N)
 
@@ -312,7 +312,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
             arrStats.append(func(adata[np.r_[idx]], *(argsv))[0])
 
             # arrStats = [data[i] for i in idx]  # efficient up to 50 data
-    else:  # not more efficient
+    else:    # not more efficient
         arrIdx = np.random.randint(N, size=N * samplesize)
         arrIdx.resize(samplesize, N)
         arrStats = [func(adata[np.r_[idx]], *args) for idx in arrIdx]
@@ -449,23 +449,21 @@ def zprob(z):
 
     """
     def yfunc(y):
-        x = (((((((((((((-0.000045255659 * y
-                         + 0.000152529290) * y - 0.000019538132) * y
-                       - 0.000676904986) * y + 0.001390604284) * y
-                     - 0.000794620820) * y - 0.002034254874) * y
-                   + 0.006549791214) * y - 0.010557625006) * y
-                 + 0.011630447319) * y - 0.009279453341) * y
-               + 0.005353579108) * y - 0.002141268741) * y
-             + 0.000535310849) * y + 0.999936657524
-        return x
+        return (((((((((((((-0.000045255659 * y
+                             + 0.000152529290) * y - 0.000019538132) * y
+                           - 0.000676904986) * y + 0.001390604284) * y
+                         - 0.000794620820) * y - 0.002034254874) * y
+                       + 0.006549791214) * y - 0.010557625006) * y
+                     + 0.011630447319) * y - 0.009279453341) * y
+                   + 0.005353579108) * y - 0.002141268741) * y
+                 + 0.000535310849) * y + 0.999936657524
 
     def wfunc(w):
-        x = ((((((((0.000124818987 * w
-                    - 0.001075204047) * w + 0.005198775019) * w
-                  - 0.019198292004) * w + 0.059054035642) * w
-                - 0.151968751364) * w + 0.319152932694) * w
-              - 0.531923007300) * w + 0.797884560593) * np.sqrt(w) * 2.0
-        return x
+        return ((((((((0.000124818987 * w
+                        - 0.001075204047) * w + 0.005198775019) * w
+                      - 0.019198292004) * w + 0.059054035642) * w
+                    - 0.151968751364) * w + 0.319152932694) * w
+                  - 0.531923007300) * w + 0.797884560593) * np.sqrt(w) * 2.0
 
     Z_MAX = 6.0  # maximum meaningful z-value
     x = np.zeros(z.shape, np.float_)  # initialize
@@ -779,9 +777,7 @@ def sliding_window_data(data, width=2, operator=np.median,
 def equals_approximately(a, b, abs=1e-11, rel=1e-11):
     if b - abs <= a <= b + abs:
         return True
-    if (1 - rel) * b <= a <= (1 + rel) * b:
-        return True
-    return False
+    return (1 - rel) * b <= a <= (1 + rel) * b
 
 def in_approximately(a, list_, abs=1e-11, rel=1e-11):
     """return True if ``a`` equals approximately any of the elements
@@ -790,8 +786,5 @@ def in_approximately(a, list_, abs=1e-11, rel=1e-11):
         return any([equals_approximately(a, b) for b in list_])
 
     """
-    for b in list_:
-        if equals_approximately(a, b, abs, rel):
-            return True
-    return False
+    return any(equals_approximately(a, b, abs, rel) for b in list_)
 

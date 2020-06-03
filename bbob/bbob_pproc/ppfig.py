@@ -190,7 +190,7 @@ def consecutiveNumbers(data):
     res = []
     tmp = groupByRange(data)
     for i in tmp:
-        tmpstring = list(str(j) for j in i)
+        tmpstring = [str(j) for j in i]
         if len(i) <= 2 : # This means length of ranges are at least 3
             res.append(', '.join(tmpstring))
         else:
@@ -210,7 +210,7 @@ def groupByRange(data):
     """
     res = []
     for _k, g in groupby(enumerate(data), lambda i,x:i-x):
-        res.append(list(i for i in map(itemgetter(1), g)))
+        res.append(list(map(itemgetter(1), g)))
 
     return res
 
@@ -319,7 +319,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
             dictinstance = i.createDictInstance()
             for j, idx in dictinstance.iteritems():
                 tmp = StrippedUpDS()
-                idxs = list(k + 1 for k in idx)
+                idxs = [k + 1 for k in idx]
                 idxs.insert(0, 0)
                 tmp.evals = i.evals[:, np.r_[idxs]].copy()
                 tmp.maxevals = i.maxevals[np.ix_(idx)].copy()

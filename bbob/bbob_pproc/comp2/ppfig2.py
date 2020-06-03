@@ -102,8 +102,7 @@ def _generateData(entry0, entry1, fthresh=None, downsampling=None):
             succ = (np.isnan(data)==False)
             if any(np.isnan(data)):
                 data[np.isnan(data)] = maxevals[np.isnan(data)]
-            tmp = [i[0]]
-            tmp.extend(toolsstats.sp(data, issuccessful=succ))
+            tmp = [i[0], *toolsstats.sp(data, issuccessful=succ)]
             res.append(tmp)
         return np.vstack(res)
 

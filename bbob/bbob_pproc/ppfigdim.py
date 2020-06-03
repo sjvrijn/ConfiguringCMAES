@@ -356,12 +356,12 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
     dictFunc = dsList.dictByFunc()
     res = []
 
+    # legend = []
+    line = []
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
         dimensions = sorted(dictFunc[func])
 
-        # legend = []
-        line = []
         mediandata = {}
         displaynumber = {}
         for i_target in range(len(valuesOfInterest)):
@@ -387,7 +387,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 else:
                     unsucc.append(np.append(dim, tmp[-2]))  # total number of fevals
 
-            if len(succ) > 0:
+            if succ:
                 tmp = np.vstack(succ)
                 # ERT
                 if genericsettings.scaling_figures_with_boxes:
@@ -478,10 +478,10 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                          "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom", fontsize=plt.rcParams['font.size'] * 0.85)
-        # if later the ylim[0] becomes >> 1, this might be a problem
+            # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
-def plot_previous_algorithms(func, target=values_of_interest):  # lambda x: [1e-8]):
+def plot_previous_algorithms(func, target=values_of_interest):    # lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm using the
     last, most difficult target in ``target``."""
     target = pproc.TargetValues.cast(target)
@@ -500,10 +500,9 @@ def plot_previous_algorithms(func, target=values_of_interest):  # lambda x: [1e-
         except KeyError: #dimension not in bestalg
             bestalgdata.append(None)
 
-    res = plt.plot(dimensions, bestalgdata, color=refcolor, linewidth=10,
-                   marker='d', markersize=25, markeredgecolor='k',
-                   zorder= -2)
-    return res
+    return plt.plot(dimensions, bestalgdata, color=refcolor, linewidth=10,
+                       marker='d', markersize=25, markeredgecolor='k',
+                       zorder= -2)
 
 def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     """From a DataSetList, returns a convergence and ERT/dim figure vs dim.

@@ -541,12 +541,15 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         print( f )
         setofalgs = set(bestalgentries[d,f].algs)
         # pre-processing data to only look at targets >= target_lb:
-        correctedbestalgentries = []
-        for i in range(0,len(bestalgentries[d,f].target)):
-            if ((bestalgentries[d,f].target[i] >= target_lb) and
-                (bestalgentries[d,f].target[i] <= target_ub)):
+        correctedbestalgentries = [
+            bestalgentries[d, f].algs[i]
+            for i in range(len(bestalgentries[d, f].target))
+            if (
+                (bestalgentries[d, f].target[i] >= target_lb)
+                and (bestalgentries[d, f].target[i] <= target_ub)
+            )
+        ]
 
-                correctedbestalgentries.append(bestalgentries[d,f].algs[i])
         print( len(correctedbestalgentries) )
         # now count how often algorithm a is best for the extracted targets
         for a in setofalgs:

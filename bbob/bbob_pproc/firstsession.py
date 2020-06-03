@@ -17,8 +17,9 @@ http://coco.lri.fr/BBOB2009/
 
 """
 
-# grep '^>>>\|^\.\.\.' firstsession.tex |sed -e 's/^.\{4\}//'
 
+
+# grep '^>>>\|^\.\.\.' firstsession.tex |sed -e 's/^.\{4\}//'
 import urllib
 import tarfile
 from pylab import *
@@ -61,7 +62,7 @@ funvals = d.funvals[:, 1:] # stores all other columns in funvals
 
 # Plot function values versus time
 nbrows, nbruns = funvals.shape
-for i in range(0, nbruns):
+for i in range(nbruns):
     loglog(budgets, funvals[:, i])
 grid()
 xlabel('Budgets')
@@ -83,7 +84,7 @@ print( ds1 )
 d1 = ds1[0]
 budgets1 = d1.funvals[:, 0]
 funvals1 = d1.funvals[:, 1:]
-for i in range(0, funvals1.shape[1]):
+for i in range(funvals1.shape[1]):
     loglog(budgets1, funvals1[:, i], linestyle='--')
 loglog(budgets1, median(funvals1, axis=1), linewidth=3, color='g',
        label='median NEWUOA')
@@ -95,7 +96,7 @@ targets = d.evals[:, 0]
 evals =  d.evals[:, 1:]
 nbrows, nbruns = evals.shape
 figure()
-for i in range(0, nbruns):
+for i in range(nbruns):
     loglog(targets, evals[:, i])
 grid()
 xlabel('Targets')
@@ -108,7 +109,7 @@ legend()  # this operation updates the figure with the inverse axis.
 # Plot target precision versus function evaluations
 # (swap x-y of previous figure)
 figure()
-for i in range(0, nbruns):
+for i in range(nbruns):
     loglog(evals[:, i], targets)
 grid()
 xlabel('Function Evaluations')
@@ -120,7 +121,7 @@ legend()
 # Plot target precision versus function evaluations with error bars
 figure() # open a new figure
 from bbob.bbob_pproc.toolsstats import prctile
-q = array(list(prctile(i, [25, 50, 75]) for i in evals))
+q = array([prctile(i, [25, 50, 75]) for i in evals])
 xmed = q[:, 1]
 xlow = xmed - q[:, 0]
 xhig = q[:, 2] - xmed

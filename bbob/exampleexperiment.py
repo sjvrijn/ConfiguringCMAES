@@ -56,7 +56,7 @@ def PURE_RANDOM_SEARCH(fun, x, maxfunevals, ftarget):
     popsize = min(maxfunevals, 200)
     fbest = np.inf
 
-    for _ in range(0, int(np.ceil(maxfunevals / popsize))):
+    for _ in range(int(np.ceil(maxfunevals / popsize))):
         xpop = 10. * np.random.rand(popsize, dim) - 5.
         print(fun)
         print(xpop)

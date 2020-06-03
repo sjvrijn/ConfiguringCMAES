@@ -66,7 +66,11 @@ def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
     for i in range(len(self.evals) - 1):
         newdat.append(self.evals[i])
         target = self.evals[i][0] / step
-        while target >= final_target and target > self.evals[i+1][0] and target / self.evals[i+1][0] - 1 > 1e-9:
+        while (
+            target >= final_target
+            and target > self.evals[i + 1][0]
+            and target / self.evals[i + 1][0] > 1.000000001
+        ):
             newdat.append(self.evals[i+1])
             newdat[-1][0] = target
             target /= step
@@ -800,31 +804,35 @@ class DataSet():
         precision.
 
         """
-        if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
-            Ndata = np.size(self.evals, 0)
-            i = Ndata
-            while i > 1 and self.evals[i-1][0] <= self.precision:
-                i -= 1
-            i += 1
-            if i < Ndata:
-                self.evals = self.evals[:i, :]  # assumes that evals is an array
-                try:
-                    self.target = self.target[:i]
-                    assert self.target[-1] == self.evals[-1][0]
-                except AttributeError:
-                    pass
-                try:
-                    self.ert = self.ert[:i]
-                except AttributeError:
-                    pass
-            assert self.evals.shape[0] == 1 or self.evals[-2][0] > self.precision
-            if self.evals[-1][0] < self.precision:
-                self.evals[-1][0] = np.max((self.precision / 1.001, self.evals[-1, 0]))
-                # warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
-                # print '*** warning: final precision was not recorded'
-                assert self.evals[-1][0] < self.precision # shall not have changed
-            assert self.evals[-1][0] > 0
-            self.maxevals = self._detMaxEvals()
+        if not isinstance(
+            genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed
+        ):
+            return
+
+        Ndata = np.size(self.evals, 0)
+        i = Ndata
+        while i > 1 and self.evals[i-1][0] <= self.precision:
+            i -= 1
+        i += 1
+        if i < Ndata:
+            self.evals = self.evals[:i, :]  # assumes that evals is an array
+            try:
+                self.target = self.target[:i]
+                assert self.target[-1] == self.evals[-1][0]
+            except AttributeError:
+                pass
+            try:
+                self.ert = self.ert[:i]
+            except AttributeError:
+                pass
+        assert self.evals.shape[0] == 1 or self.evals[-2][0] > self.precision
+        if self.evals[-1][0] < self.precision:
+            self.evals[-1][0] = np.max((self.precision / 1.001, self.evals[-1, 0]))
+            # warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
+            # print '*** warning: final precision was not recorded'
+            assert self.evals[-1][0] < self.precision # shall not have changed
+        assert self.evals[-1][0] > 0
+        self.maxevals = self._detMaxEvals()
 
     def _complement_data(self, step=10**0.2, final_target=1e-8):
         """insert a line for each target value"""
@@ -1044,7 +1052,7 @@ class DataSet():
         repetitions of such instance.
 
         """
-        return dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
+        return {j: self.instancenumbers.count(j) for j in set(self.instancenumbers)}
 
     def splitByTrials(self, whichdata=None):
         """Splits the post-processed data arrays by trials.
@@ -1070,8 +1078,7 @@ class DataSet():
         funvals = {}
 
         for instanceid, idx in dictinstance.iteritems():
-            evals[instanceid] = self.evals[:,
-                                           numpy.ix_(list(i + 1 for i in idx))]
+            evals[instanceid] = self.evals[self,numpy.ix_([i + 1 for i in idx])]
             funvals[instanceid] = self.funvals[:,
                                            numpy.ix_(list(i + 1 for i in idx))]
 
@@ -1140,8 +1147,14 @@ class DataSet():
         averages = np.array(evalsums, copy=False) / self.nbRuns()
 
         if do_assertion:
-            assert all([(ert == np.inf and ps == 0) or toolsdivers.equals_approximately(ert,  averages[i] / ps)
-                            for i, (ert, ps) in enumerate(zip(self.detERT(targets), self.detSuccessRates(targets)))])
+            assert all(
+                (ert == np.inf and ps == 0)
+                or toolsdivers.equals_approximately(ert, averages[i] / ps)
+                for i, (ert, ps) in enumerate(
+                    zip(self.detERT(targets), self.detSuccessRates(targets))
+                )
+            )
+
 
         return averages
 
@@ -1224,7 +1237,16 @@ class DataSet():
             evalsrows[target] = self.evals[idata, 1:].copy() if copy else self.evals[idata, 1:]
 
         if do_assertion:
-            assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i]))) for i, target in enumerate(targets)])
+            assert all(
+                all(
+                    (
+                        np.isnan(evalsrows[target])
+                        + (evalsrows[target] == self._detEvals2(targets)[i])
+                    )
+                )
+                for i, target in enumerate(targets)
+            )
+
 
         return [evalsrows[t] for t in targets]
 
@@ -1254,11 +1276,11 @@ class DataSet():
                     break
             tmp[t] = prevline.copy()
 
-        return list(tmp[i][1:] for i in targets)
+        return [tmp[i][1:] for i in targets]
 
     def plot(self):
+        idx = self.evals[:, 0] > 0
         for evals in self.evals[:, 1:].transpose(): # loop over the rows of the transposed array
-            idx = self.evals[:, 0] > 0
             # plt.semilogx(self.evals[idx, 0], evals[idx])
             plt.loglog(self.evals[idx, 0], evals[idx])
             plt.gca().invert_xaxis()
@@ -1328,10 +1350,7 @@ class DataSetList(list):
             elif name.endswith('.pickle') or name.endswith('.pickle.gz'):
                 try:
                     # cocofy(name)
-                    if name.endswith('.gz'):
-                        f = gzip.open(name)
-                    else:
-                        f = open(name,'r')
+                    f = gzip.open(name) if name.endswith('.gz') else open(name,'r')
                     try:
                         entry = pickle.load(f)
                     except pickle.UnpicklingError:
@@ -1346,7 +1365,7 @@ class DataSetList(list):
                         pass
                     # if not hasattr(entry, 'detAverageEvals')
                     self.append(entry)
-                    #set_trace()
+                                #set_trace()
                 except IOError as e:
                     errno, strerror = e.args
                     print( "I/O error(%s): %s" % (errno, strerror) )
@@ -1579,7 +1598,7 @@ class DataSetList(list):
             algs = dictAlg.keys()
             algs.sort()
             sys.stdout.write('Algorithm(s): %s' % (algs[0][0]))
-            for i in range(1, len(algs)):
+            for _ in range(1, len(algs)):
                 sys.stdout.write(', %s' % (algs[0][0]))
             sys.stdout.write('\n')
 
@@ -1599,9 +1618,9 @@ class DataSetList(list):
             sys.stdout.write('\n')
 
             maxevals = []
-            for i in range(len(dimensions)):
+            for dimension in dimensions:
                 maxeval = []
-                for d in dictDim[dimensions[i]]:
+                for d in dictDim[dimension]:
                     maxeval = int(max((d.mMaxEvals(), maxeval)))
                 maxevals.append(maxeval)
             print( 'Max evals: %s' % str(maxevals) )
@@ -1609,7 +1628,7 @@ class DataSetList(list):
             if opt == 'all':
                 print( 'Df      |     min       10      med       90      max' )
                 print( '--------|--------------------------------------------' )
-                evals = list([] for i in targets_displayed_for_info)
+                evals = [[] for i in targets_displayed_for_info]
                 for i in self:
                     tmpevals = i.detEvals(targets_displayed_for_info)
                     for j in range(len(targets_displayed_for_info)):
@@ -1624,7 +1643,7 @@ class DataSetList(list):
                             tmp2.append('%8d' % k)
                     print( '%2.1e |%s' % (j, ' '.join(tmp2)) )
 
-            # display distributions of final values
+                # display distributions of final values
         else:
             print( self )
 
@@ -2036,8 +2055,8 @@ def processInputArgs(args, verbose=True):
         name to a DataSetList
 
     """
-    dsList = list()
-    sortedAlgs = list()
+    dsList = []
+    sortedAlgs = []
     dictAlg = {}
     for i in args:
         i = i.strip()
@@ -2154,13 +2173,6 @@ def dictAlgByDim2(dictAlg, remove_empty=False):
 
     if remove_empty:
         raise NotImplementedError
-        for dim, ds_dict in res.iteritems():
-            for alg, ds_dict2 in ds_dict.iteritems():
-                if not len(ds_dict2):
-                    pass
-            if not len(ds_dict):
-                pass
-
     return res
 
 def dictAlgByFun(dictAlg):

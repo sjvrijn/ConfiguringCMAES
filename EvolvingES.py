@@ -94,7 +94,7 @@ def _trimListOfListsByLength(lists):
         :param lists:   The list of lists to trim
         :return:        The same lists, but trimmed in length to match the length of the shortest list from ``lists``
     """
-    fit_lengths = set([len(x) for x in lists])
+    fit_lengths = {len(x) for x in lists}
     if len(fit_lengths) > 1:
         min_length = min(fit_lengths)
         lists = [x[:min_length] for x in lists]
@@ -167,7 +167,6 @@ def reorganiseBBOBOutput(path, fid, ndim, iids, num_reps):
     os.chdir(path + '{ndim}d-f{fid}/'.format(ndim=ndim, fid=fid))
 
     subfolder = 'i{iid}-r{rep}/'
-    extensions = ['.dat', '.rdat', '.tdat']
     info_fname = 'bbobexp_f{}.info'.format(fid)
     data_folder = 'data_f{}/'.format(fid)
     data_fname = '_f{}_DIM{}'.format(fid, ndim)
@@ -183,6 +182,7 @@ def reorganiseBBOBOutput(path, fid, ndim, iids, num_reps):
         start_at = 0
 
     with open(info_fname, 'a') as f_to:
+        extensions = ['.dat', '.rdat', '.tdat']
         for iid, rep in cases[start_at:]:
             this_folder = subfolder.format(iid=iid, rep=rep)
 
@@ -213,8 +213,7 @@ def getMaxFileNumber(data_folder):
     regexp = re.compile('bbobexp-(\d*)_f.*')
     files = os.listdir(data_folder)
     matches = [regexp.match(f) for f in files]
-    counter = max((int(match.group(1)) if match else 0 for match in matches))
-    return counter
+    return max((int(match.group(1)) if match else 0 for match in matches))
 
 
 '''-----------------------------------------------------------------------------
@@ -392,8 +391,7 @@ def runPool(runFunction, arguments):
     p = Pool(min(Config.num_threads, len(arguments)))
 
     local_func = partial(func_star, func=runFunction)
-    results = p.map(local_func, arguments)
-    return results
+    return p.map(local_func, arguments)
 
 
 def runSingleThreaded(runFunction, arguments):
@@ -404,7 +402,4 @@ def runSingleThreaded(runFunction, arguments):
         :param arguments:   The arguments to passed to ``runFunction``, one run at a time
         :return:            List of any results produced by ``runFunction``
     """
-    results = []
-    for arg in arguments:
-        results.append(runFunction(*arg))
-    return results
+    return [runFunction(*arg) for arg in arguments]

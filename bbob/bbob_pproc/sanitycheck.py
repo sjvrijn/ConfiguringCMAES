@@ -94,7 +94,7 @@ def checkinfofile(filename, verbose=True):
                         print( 'Found data files %s.dat and %s.tdat' % (root, root) )
                 datfiles.extend((dat, tdat))
             else:
-                if not ':' in elem:
+                if ':' not in elem:
                     warnings.warn('Caught an ill-finalized run in %s'
                                   % (filename))
                     trials.append(ast.literal_eval(elem))
@@ -150,8 +150,8 @@ def checkinfofile(filename, verbose=True):
 def is_correct_instances(trials, verbose=True):
     """Check instances and number of repetitions."""
 
-    tmp = dict((j, trials.count(j)) for j in set(trials))
-    return (tmp == correct_instances2010 or tmp == correct_instances2009)
+    tmp = {j: trials.count(j) for j in set(trials)}
+    return tmp in [correct_instances2010, correct_instances2009]
 
 def somestatistics():
     """Do some statistics over the data."""

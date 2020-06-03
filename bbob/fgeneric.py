@@ -97,9 +97,7 @@ class LoggingFunction( object ):
                       self.bestfnoisy ) )
 
             if len( self.x ) < 22:
-                tmp = []
-                for i in self.x:
-                    tmp.append( ' %+5.4e' % i )
+                tmp = [' %+5.4e' % i for i in self.x]
                 res += ''.join( tmp )
             res += '\n'
             return res
@@ -172,8 +170,7 @@ class LoggingFunction( object ):
             pass
 
     def _is_ready( self ):
-        res = ( self._is_setdim and self._is_setfun and not self._is_finalized )
-        return res
+        return ( self._is_setdim and self._is_setfun and not self._is_finalized )
 
     def _readytostart( self ):
         # index entry, data files
@@ -181,8 +178,10 @@ class LoggingFunction( object ):
                                      str( self.funId ), self._dim )
 
         res = []
-        if ( not ( self._is_samefun and self._is_samedim )
-            or not os.path.exists( self.indexfile ) ):
+        if not (
+            (self._is_samefun and self._is_samedim)
+            and os.path.exists(self.indexfile)
+        ):
             i = 0
             while os.path.exists( filename + '.dat' ):
                 i += 1
@@ -195,16 +194,15 @@ class LoggingFunction( object ):
             if os.path.exists( self.indexfile ):
                 res.append( '\n' ) # was: res += '\n'
 
-            if isinstance( self.funId, str ):
-                tmp = "'%s'" % self.funId
-            else:
-                tmp = str( self.funId )
+            tmp = (
+                "'%s'" % self.funId
+                if isinstance(self.funId, str)
+                else str(self.funId)
+            )
+
             res.append( 'funcId = %s' % tmp )
             for i in self._fun_kwargs.items():
-                if isinstance( i[1], str ):
-                    tmp = "'%s'" % i[1]
-                else:
-                    tmp = str( i[1] )
+                tmp = "'%s'" % i[1] if isinstance( i[1], str ) else str( i[1] )
                 res.append( ', %s = %s' % ( str( i[0] ), i[1] ) )
             res.append( ', DIM = %d, Precision = %.3e, algId = \'%s\'\n'
                        % ( self._dim, self.precision, self.algid ) )
@@ -247,18 +245,10 @@ class LoggingFunction( object ):
 
         """
         # This block is the opposite in Matlab!
-        if self._is_rowformat:
-            x = np.asarray( inputx )
-        else:
-            x = np.transpose( inputx )
-
+        x = np.asarray( inputx ) if self._is_rowformat else np.transpose( inputx )
         curshape = np.shape( x )
         dim = curshape[-1]
-        if len( curshape ) < 2:
-            popsi = 1
-        else:
-            popsi = curshape[0]
-
+        popsi = 1 if len( curshape ) < 2 else curshape[0]
         if not self._is_setdim or self._dim != dim:
             self._setdim( dim )
 
@@ -275,10 +265,10 @@ class LoggingFunction( object ):
             self._fun_evalfull = ( lambda x: tuple( [self._fun_eval( x )] * 2 ) )
 
         if ( self.lasteval.num + popsi >= self.evalsTrigger or
-            np.min( ftrue ) - self.fopt < self.fTrigger ): # need to write something
+                np.min( ftrue ) - self.fopt < self.fTrigger ): # need to write something
             buffr = []
             hbuffr = []
-            for j in range( 0, popsi ):
+            for j in range(popsi):
                 try:
                     fvaluej = fvalue[j]
                     ftruej = ftrue[j]
@@ -435,7 +425,7 @@ class LoggingFunction( object ):
 
     def _getevaluations( self ):
         """Number of function evaluations so far."""
-        if not hasattr( self, 'lasteval' ) or not self._is_setdim:
+        if not (hasattr(self, 'lasteval') and self._is_setdim):
             # when self._is_setfun and not self._is_setdim,
             # self.lasteval.num might not be 0. TODO: prevent this inconsistency.
             return 0. # should be synchronized with what is assigned to __Eval.num
@@ -535,7 +525,7 @@ class LoggingFunction( object ):
         """
         if hasattr( self, '_dim' ):
             self._is_samedim = ( self._dim == dim )
-            if not self._is_samedim and not self._is_finalized:
+            if not (self._is_samedim or self._is_finalized):
                 self.finalizerun()
         self._is_setdim = True
         self._dim = dim
@@ -557,9 +547,11 @@ class LoggingFunction( object ):
     def restart( self, restart_reason = "restarted" ):
         """Adds an output line to the restart-log. Call this if restarts occur within run_(your)_optimizer."""
         if self._getevaluations > 0:
-            buffr = []
-            buffr.append( self.lasteval.sprintData( self.fopt ) )
-            buffr.append( "% restart: " + restart_reason + "\n" )
+            buffr = [
+                self.lasteval.sprintData(self.fopt),
+                '% restart: ' + restart_reason + '\n',
+            ]
+
             if buffr:
                 fr = open( self.rdatafile, 'a' )
                 fr.writelines( buffr )

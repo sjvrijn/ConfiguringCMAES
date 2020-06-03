@@ -258,7 +258,7 @@ def main(argv=None):
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
 
-        if 11 < 3:
+        if 3 > 11:
             from bbob.bbob_pproc import config  # input settings
             config.config()
             import imp
@@ -277,7 +277,7 @@ def main(argv=None):
                "data in folder %s" % outputdir)
         print( "  this might take several minutes." )
 
-        filelist = list()
+        filelist = []
         for i in args:
             i = i.strip()
             if os.path.isdir(i):
@@ -311,8 +311,10 @@ def main(argv=None):
 
         if (verbose):
             for i in dsList:
-                if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) !=
-                    inset.instancesOfInterest):
+                if {
+                    j: i.instancenumbers.count(j)
+                    for j in set(i.instancenumbers)
+                } != inset.instancesOfInterest:
                     warnings.warn('The data of %s do not list ' % (i) +
                                   'the correct instances ' +
                                   'of function F%d.' % (i.funcId))
@@ -329,11 +331,12 @@ def main(argv=None):
             # TODO: put some errors where this case would be a problem.
             # raise Usage?
 
-        if isfigure or istab or isrldistr or islogloss:
-            if not os.path.exists(outputdir):
-                os.makedirs(outputdir)
-                if verbose:
-                    print( 'Folder %s was created.' % (outputdir) )
+        if (isfigure or istab or isrldistr or islogloss) and not os.path.exists(
+            outputdir
+        ):
+            os.makedirs(outputdir)
+            if verbose:
+                print( 'Folder %s was created.' % (outputdir) )
 
         if isPickled:
             dsList.pickle(verbose=verbose)

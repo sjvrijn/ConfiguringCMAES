@@ -163,8 +163,6 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         dictDim0 = dictFunc0[f].dictByDim()
         dictDim1 = dictFunc1[f].dictByDim()
         dims = set(dictDim0.keys()) & set(dictDim1.keys())
-        #set_trace()
-
         for i, d in enumerate(dimensions):
             try:
                 entry0 = dictDim0[d][0] # should be only one element
@@ -179,14 +177,17 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 xdata_all = np.array(entry0.detERT(all_targets))
                 ydata_all = np.array(entry1.detERT(all_targets))
                 # idx of reliable targets: last index where success rate >= 1/2 and ERT <= maxevals
-                idx = []
-                for ari in (np.where(entry0.detSuccessRates(all_targets) >= 0.5)[0],
-                         np.where(entry1.detSuccessRates(all_targets) >= 0.5)[0],
-                         np.where(xdata_all <= max(entry0.maxevals))[0],
-                         np.where(ydata_all <= max(entry1.maxevals))[0]
-                        ):
-                    if len(ari):
-                        idx.append(ari[-1])
+                idx = [
+                    ari[-1]
+                    for ari in (
+                        np.where(entry0.detSuccessRates(all_targets) >= 0.5)[0],
+                        np.where(entry1.detSuccessRates(all_targets) >= 0.5)[0],
+                        np.where(xdata_all <= max(entry0.maxevals))[0],
+                        np.where(ydata_all <= max(entry1.maxevals))[0],
+                    )
+                    if len(ari)
+                ]
+
                 if len(idx) == 4:
                     max_idx = min(idx)
                     ## at least up to the most difficult given target
