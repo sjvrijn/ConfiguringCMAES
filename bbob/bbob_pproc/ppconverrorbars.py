@@ -44,10 +44,10 @@ def rearrange(blist, flist):
     """Alligns the number of evaluations taken from the blist with the correpsning flist"""
     final_b=[]
     final_f=[]
-    for i in range(0,len(blist)): #runs over dimensions
+    for i in range(len(blist)): #runs over dimensions
         erg_b = numpy.empty((0), float)
         erg_f = [numpy.empty ((0), float), numpy.empty ((0), float), numpy.empty ((0), float)]
-        for j in range(0,len(blist[i])): #runs over function evaluations
+        for j in range(len(blist[i])):    #runs over function evaluations
             erg_b=numpy.append(erg_b,blist[i][j])
             erg_f[0]=numpy.append(erg_f[0],numpy.median(flist[i][j]))
             erg_f[1]=numpy.append(erg_f[1],prctile(flist[i][j], [0.25]))

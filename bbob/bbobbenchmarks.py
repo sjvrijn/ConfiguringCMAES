@@ -173,7 +173,7 @@ def compute_rotation(seed, dim):
 
     B = np.reshape(gauss(dim * dim, seed), (dim, dim))
     for i in range(dim):
-        for j in range(0, i):
+        for j in range(i):
             B[i] = B[i] - dot(B[i], B[j]) * B[j]
         B[i] = B[i] / (np.sum(B[i]**2) ** .5)
     return B
@@ -272,8 +272,7 @@ def _myrandn(size):
     _randomnseed = _randomnseed + 1.
     if _randomnseed > 1e9:
         _randomnseed = 1.
-    res = np.reshape(gauss(np.prod(size), _randomnseed), size)
-    return res
+    return np.reshape(gauss(np.prod(size), _randomnseed), size)
 
 _randomseed = 30. # warning this is a global variable...
 def _myrand(size):
@@ -287,8 +286,7 @@ def _myrand(size):
     _randomseed = _randomseed + 1
     if _randomseed > 1e9:
         _randomseed = 1
-    res = np.reshape(unif(np.prod(size), _randomseed), size)
-    return res
+    return np.reshape(unif(np.prod(size), _randomseed), size)
 
 def fGauss(ftrue, beta):
     """Returns Gaussian model noisy value."""
@@ -741,10 +739,7 @@ class F3(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialisation
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.scales = (self.condition ** .5) ** linspace(0, 1, dim)
 
         # DIM- and POPSI-dependent initialisations of DIM*POPSI matrices
@@ -793,10 +788,7 @@ class F4(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.xopt[:min(dim, self.maxindex):2] = abs(self.xopt[:min(dim, self.maxindex):2])
             self.scales = (self.condition ** .5) ** linspace(0, 1, dim)
 
@@ -897,10 +889,7 @@ class F6(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
             self.scales = (self.condition ** .5) ** linspace(0, 1, dim)
             self.linearTF = dot(compute_rotation(self.rseed, dim), diag(self.scales))
@@ -949,10 +938,7 @@ class _FStepEllipsoid(BBOBFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
             self.scales = self.condition ** linspace(0, 1, dim)
             self.linearTF = dot(compute_rotation(self.rseed, dim),
@@ -1119,10 +1105,7 @@ class F9(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             scale = max(1, dim ** .5 / 8.) # nota: different from scales in F8
             self.linearTF = scale * compute_rotation(self.rseed, dim)
             self.xopt = np.hstack(dot(.5 * np.ones((1, dim)), self.linearTF.T)) / scale ** 2
@@ -1172,10 +1155,7 @@ class _FEllipsoid(BBOBFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
             self.scales = self.condition ** linspace(0, 1, dim)
 
@@ -1249,10 +1229,7 @@ class F11(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
 
         # DIM- and POPSI-dependent initialisations of DIM*POPSI matrices
@@ -1348,10 +1325,7 @@ class F13(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
             self.scales = (self.condition ** .5) ** linspace(0, 1, dim)
             self.linearTF = dot(compute_rotation(self.rseed, dim), diag(self.scales))
@@ -1401,10 +1375,7 @@ class _FDiffPow(BBOBFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
 
         # DIM- and POPSI-dependent initialisations of DIM*POPSI matrices
@@ -1470,10 +1441,7 @@ class F15(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
             self.scales = (self.condition ** .5) ** linspace(0, 1, dim)
             self.linearTF = dot(compute_rotation(self.rseed, dim), diag(self.scales))
@@ -1522,10 +1490,7 @@ class F16(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
             self.scales = (1. / self.condition ** .5) ** linspace(0, 1, dim) # CAVE?
             self.linearTF = dot(compute_rotation(self.rseed, dim), diag(self.scales))
@@ -1594,10 +1559,7 @@ class _FSchaffersF7(BBOBFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
             self.scales = (self.condition ** .5) ** linspace(0, 1 , dim)
             self.linearTF = dot(compute_rotation(self.rseed, dim), diag(self.scales))
@@ -1943,10 +1905,7 @@ class F23(BBOBNfreeFunction):
     def initwithsize(self, curshape, dim):
         # DIM-dependent initialization
         if self.dim != dim:
-            if self.zerox:
-                self.xopt = zeros(dim)
-            else:
-                self.xopt = compute_xopt(self.rseed, dim)
+            self.xopt = zeros(dim) if self.zerox else compute_xopt(self.rseed, dim)
             self.rotation = compute_rotation(self.rseed + 1e6, dim)
             self.scales = (self.condition ** .5) ** linspace(0, 1, dim)
             self.linearTF = dot(compute_rotation(self.rseed, dim), diag(self.scales))
@@ -2062,15 +2021,15 @@ nfreefunclasses = (F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14,
 noisyfunclasses = (F101, F102, F103, F104, F105, F106, F107, F108, F109, F110,
                    F111, F112, F113, F114, F115, F116, F117, F118, F119, F120,
                    F121, F122, F123, F124, F125, F126, F127, F128, F129, F130)
-dictbbobnfree = dict((i.funId, i) for i in nfreefunclasses)
+dictbbobnfree = {i.funId: i for i in nfreefunclasses}
 nfreeIDs = sorted(dictbbobnfree.keys())  # was: "nfreenames"
 nfreeinfos = [str(i) + ': ' + dictbbobnfree[i].__doc__ for i in nfreeIDs]
 
-dictbbobnoisy = dict((i.funId, i) for i in noisyfunclasses)
+dictbbobnoisy = {i.funId: i for i in noisyfunclasses}
 noisyIDs = sorted(dictbbobnoisy.keys())  # was noisynames
 
 funclasses = list(nfreefunclasses) + list(noisyfunclasses)
-dictbbob = dict((i.funId, i) for i in funclasses)
+dictbbob = {i.funId: i for i in funclasses}
 
 # TODO: pb xopt f9, 21, 22
 class _FTemplate(BBOBNfreeFunction):

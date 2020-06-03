@@ -144,15 +144,13 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     res = []
     assert len(dsList.dictByDim()) == 1 # We never integrate over dimensions...
     data = []
+    # TODO: alternative: min(dsref[(entry.dim, entry.funcId)].detEvals((t,))[0])
+    #       is the min from the alg with the best ERT
+    flg_ert = 1
     for entry in dsList:
         for t in targets:
-            # TODO: alternative: min(dsref[(entry.dim, entry.funcId)].detEvals((t,))[0])
-            #       is the min from the alg with the best ERT
-            flg_ert = 1
             if flg_ert:
                 normalizer = dsref[(entry.dim, entry.funcId)].detERT((t,))[0]
-            else:
-                pass
             if np.isinf(normalizer):
                 continue
             if istoolsstats:
@@ -169,8 +167,8 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
             else:
                 x = entry.detERT([t])[0]
                 data.append(x/normalizer)
-            #if (np.array(tmp) < 1e-1).any():
-            #    set_trace()
+                    #if (np.array(tmp) < 1e-1).any():
+                    #    set_trace()
 
     # Display data
     data = np.array(data)

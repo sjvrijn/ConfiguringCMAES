@@ -23,9 +23,8 @@ def less(a, b):
     """return a < b, while comparing nan results in False without warning"""
     current_err_setting = np.geterr()
     np.seterr(invalid='ignore')
-    res = a < b
     np.seterr(**current_err_setting)
-    return res
+    return a < b
 
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """

@@ -565,11 +565,7 @@ def getBestFromRankedBF(dim, fid, num=10):
     bf_results.sort(key=lambda a: a.fitness)
     indexes = [reprToInt(a.ES) for a in bf_results]
 
-    results = []
-    for i in range(num):
-        results.append((indexes[i], i, bf_results[i].fitness))
-
-    return results
+    return [(indexes[i], i, bf_results[i].fitness) for i in range(num)]
 
 
 def printBestFromRankedBF():

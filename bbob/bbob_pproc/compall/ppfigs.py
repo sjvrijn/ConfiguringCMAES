@@ -158,10 +158,7 @@ def plotLegend(handles, maxval=None):
             tmp = x2 <= maxval
             y = y2[tmp][-1]
             ybis = y2[tmp][y2[tmp] < y]
-            if len(ybis) > 0:
-                ybis = ybis[-1]
-            else:
-                ybis = y2[tmp][-2]
+            ybis = ybis[-1] if len(ybis) > 0 else y2[tmp][-2]
             ys.setdefault(y, {}).setdefault(ybis, []).append(h)
             lh += 1
         except IndexError:
@@ -387,7 +384,7 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
             bestalg.loadBBOB2009()
 
         bestalgdata = []
-        dimbestalg = list(df[0] for df in bestalg.bestalgentries2009 if df[1] == f)
+        dimbestalg = [df[0] for df in bestalg.bestalgentries2009 if df[1] == f]
         dimbestalg.sort()
         dimbestalg2 = []
         for d in dimbestalg:
@@ -408,7 +405,7 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
             dims = sorted(pproc.dictAlgByDim(dictFunc[f]))
             for i, dim in enumerate(dims):
                 datasets = pproc.dictAlgByDim(dictFunc[f])[dim]
-                assert all([len(datasets[ialg]) == 1 for ialg in sortedAlgs if datasets[ialg]])
+                assert all(len(datasets[ialg]) == 1 for ialg in sortedAlgs if datasets[ialg])
                 dsetlist =  [datasets[ialg][0] for ialg in sortedAlgs if datasets[ialg]]
                 if len(dsetlist) > 1:
                     arzp, arialg = toolsstats.significance_all_best_vs_other(dsetlist, target((f, dim)))
@@ -425,7 +422,7 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
         isLegend = False
         if legend:
             plotLegend(handles)
-        elif 1 < 3:
+        elif 3 > 1:
             if f in (1, 24, 101, 130) and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
@@ -468,7 +465,7 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
                 + ' will overwrite any modification.\n')
         f.write('Legend: ')
 
-        for i in range(0, len(sortedAlgs)):
+        for i in range(len(sortedAlgs)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
             f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sortedAlgs[i])))
@@ -477,22 +474,4 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
             print( '(obsolete) Wrote legend in %s' % filename )
     except IOError:
         raise
-
-
-        handles.append(tmp)
-
-        if funInfos:
-            plt.gca().set_title(funInfos[f])
-
-        beautify(rightlegend=legend)
-
-        if legend:
-            plotLegend(handles)
-        else:
-            if f in (1, 24, 101, 130):
-                plt.legend()
-
-        saveFigure(filename, figFormat=genericsettings.fig_formats, verbose=verbose)
-
-        plt.close()
 

@@ -481,11 +481,11 @@ def main(argv=None):
                     funcs.sort()
                     nbgroups = int(numpy.ceil(len(funcs)/24.))
                     def split_seq(seq, nbgroups):
-                        newseq = []
                         splitsize = 1.0/nbgroups*len(seq)
-                        for i in range(nbgroups):
-                            newseq.append(seq[int(round(i*splitsize)):int(round((i+1)*splitsize))])
-                        return newseq
+                        return [
+                            seq[int(round(i * splitsize)) : int(round((i + 1) * splitsize))]
+                            for i in range(nbgroups)
+                        ]
 
                     groups = split_seq(funcs, nbgroups)
                     # merge

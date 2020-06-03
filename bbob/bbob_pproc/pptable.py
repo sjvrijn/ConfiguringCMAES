@@ -119,13 +119,12 @@ def _treat(ds):
     wholetable = np.zeros(1, dtype=dtype)
     table = wholetable[0]
 
-    bestdata = list()
-    bestdata.extend(bestert)
+    bestdata = list(bestert)
     bestdata.append(np.sum(np.isnan(bestfinaldata) == False))
     bestdata.append(len(bestfinaldata))
     besttable[0] = tuple(bestdata)
 
-    data = list()
+    data = []
     for i, e in enumerate(evals): # loop over targets
         unsucc = np.isnan(e)
         bt = toolsstats.drawSP(e[unsucc == False], ds.maxevals[unsucc],
@@ -139,9 +138,7 @@ def _treat(ds):
     return besttable, wholetable
 
 def _table(data):
-    res = []
-
-    return res
+    return []
 
 def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
     """Generate a table of ratio ERT/ERTbest vs target precision.

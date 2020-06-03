@@ -138,10 +138,9 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
 
     for j in range(len(targetValuesToReach)):
         x = []
-        for func in evals0:
+        for func, tmp0 in evals0.items():
             # Compute the pair-wise ratio
             tmp1 = numpy.reshape(evals1[func][j], (1, len(evals1[func][j])))
-            tmp0 = numpy.reshape(evals0[func][j], (len(evals0[func][j]), 1))
             try:
                 x.append((tmp1/tmp0).flatten())  # inf/inf results in nan
             except FloatingPointError:
@@ -154,7 +153,7 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
             label = '%s: %d/%d' % (targetValuesToReach.label(j), succ1[j], succ0[j])
         else:
             label = '%s: %d/%d' % (targetValuesToReach.loglabel(j), succ1[j], succ0[j])
-        if len(x) > 0:  # prevent warning/error
+        if x:    # prevent warning/error
             x = numpy.hstack(x)
             x = x[numpy.isnan(x)==False] # Is it correct?
         n = len(x)
@@ -165,11 +164,11 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
 
         x.sort()
         #Catch negative values: zeros are not a problem...
-        tmp = len(list(i for i in x if i <= 0))
+        tmp = len([i for i in x if i <= 0])
         x = x[tmp:]
         #Catch inf, those could be a problem with the log scale...
-        #tmp2 = 0
-        tmp2 = len(list(i for i in x if i > 0 and numpy.isinf(i)))
+                #tmp2 = 0
+        tmp2 = len([i for i in x if i > 0 and numpy.isinf(i)])
         if tmp2 > 0:
             x = x[:-tmp2]
 
@@ -192,7 +191,7 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
             #res.extend(plotUnifLogXMarkers(x2, y2, 3, plotArgs))
             res.append(plotUnifLogXMarkers(x2, y2, nbperdecade=3, logscale=False, **plotArgs)[0])
 
-        # TODO: check if all of evalsX[func] is numpy.inf and so on...
+            # TODO: check if all of evalsX[func] is numpy.inf and so on...
 
     return res
 

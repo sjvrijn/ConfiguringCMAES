@@ -418,11 +418,11 @@ def plot(xdata, ydata):
     """
     res = []
 
-    tmp = list(10**np.mean(i[np.isfinite(i)]) for i in ydata)
+    tmp = [10**np.mean(i[np.isfinite(i)]) for i in ydata]
     res.extend(plt.plot(xdata, tmp, ls='-', color='k', lw=3, #marker='+',
                         markersize=20, markeredgewidth=3))
 
-    if max(len(i) for i in ydata) < 20: # TODO: subgroups of function, hopefully.
+    if max(len(i) for i in ydata) < 20:    # TODO: subgroups of function, hopefully.
         for i, y in enumerate(ydata):
             # plot all single data points
             if (np.isfinite(y)==False).any():
@@ -475,9 +475,14 @@ def plot(xdata, ydata):
                                     verticalalignment='bottom'))
                 y = y[np.isfinite(y)]
 
-        dictboxwhisker = boxplot(list(10**np.array(i) for i in ydata),
-                                 sym='', notch=0, widths=None,
-                                 positions=xdata)
+        dictboxwhisker = boxplot(
+            [10 ** np.array(i) for i in ydata],
+            sym='',
+            notch=0,
+            widths=None,
+            positions=xdata,
+        )
+
         #'medians', 'fliers', 'whiskers', 'boxes', 'caps'
         plt.setp(dictboxwhisker['medians'], lw=3)
         plt.setp(dictboxwhisker['boxes'], lw=3)
@@ -485,10 +490,28 @@ def plot(xdata, ydata):
         plt.setp(dictboxwhisker['whiskers'], lw=3)
         for i in dictboxwhisker.values():
             res.extend(i)
-        res.extend(plt.plot(xdata, list(10**min(i) for i in ydata), marker='.',
-                            markersize=20, color='k', ls=''))
-        res.extend(plt.plot(xdata, list(10**max(i) for i in ydata), marker='.',
-                             markersize=20, color='k', ls=''))
+        res.extend(
+            plt.plot(
+                xdata,
+                [10 ** min(i) for i in ydata],
+                marker='.',
+                markersize=20,
+                color='k',
+                ls='',
+            )
+        )
+
+        res.extend(
+            plt.plot(
+                xdata,
+                [10 ** max(i) for i in ydata],
+                marker='.',
+                markersize=20,
+                color='k',
+                ls='',
+            )
+        )
+
 
     return res
 
@@ -501,8 +524,8 @@ def beautify():
     ymax = 1e4
     plt.ylim(ymin=ymin, ymax=ymax)
     ydata = np.power(10., np.arange(np.log10(ymin), np.log10(ymax)+1))
-    yticklabels = list(str(i) for i in range(int(np.log10(ymin)),
-                                             int(np.log10(ymax)+1)))
+    yticklabels = [str(i) for i in range(int(np.log10(ymin)),
+                                                 int(np.log10(ymax)+1))]
     plt.yticks(ydata, yticklabels)
 
     plt.xlabel('log10 of FEvals / dimension')
@@ -536,8 +559,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
 
         maxevals = max(maxevals)
         mFE = max(mFE)
-        EVALS = [2.*d]
-        EVALS.extend(10.**(np.arange(1, np.log10(1e-9 + maxevals * 1./d))) * d)
+        EVALS = [2.0 * d, *10.0**np.arange(1, np.log10(1e-09 + maxevals * 1.0 / d)) * d]
         #Set variables: Done
         data = generateData(dsList, EVALS, CrE)
 
@@ -558,16 +580,16 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
 
         #set_trace()
         res.append(" & ".join(header))
-        for i in range(len(EVALS)):
-            tmpdata = list(data[f][i] for f in data)
+        for EVAL in EVALS:
+            tmpdata = [data[f][i] for f in data]
             #set_trace()
             tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
             # format entries
-            #tmp = [writeFEvals(EVALS[i]/d, '.0')]
-            if EVALS[i]/d < 200:
-                tmp = [writeFEvals2(EVALS[i]/d, 3)]
+                        #tmp = [writeFEvals(EVALS[i]/d, '.0')]
+            if EVAL / d < 200:
+                tmp = [writeFEvals2(EVAL / d, 3)]
             else:
-                tmp = [writeFEvals2(EVALS[i]/d, 1)]
+                tmp = [writeFEvals2(EVAL / d, 1)]
             for j in tmpdata:
                 # tmp.append(writeFEvals(j, '.2'))
                 # tmp.append(writeFEvals2(j, 2))

@@ -72,11 +72,11 @@ class MultiReader(list):
 
     def currentLine(self):
         """Aggregates currentLines information."""
-        return numpy.array(list(i.currentLine[self.idxData] for i in self))
+        return numpy.array([i.currentLine[self.idxData] for i in self])
 
     def currentValues(self):
         """Gets the list of the current alignment values."""
-        return list(i.currentLine[self.idx] for i in self)
+        return [i.currentLine[self.idx] for i in self]
 
     def nextValues(self):
         """Gets the list of the next alignment values."""
@@ -110,10 +110,7 @@ class MultiReader(list):
             self.isFinished = False
             self.currentLine = None
             self.nextLine = self.it.next()
-            if isHArray:
-                self.idxEvals = range(1, numpy.shape(data)[1])
-            else:
-                self.idxEvals = idxEvals
+            self.idxEvals = range(1, numpy.shape(data)[1]) if isHArray else idxEvals
 
         def next(self):
             """Returns the next (last if undefined) line of the array data."""
@@ -198,7 +195,7 @@ class HMultiReader(MultiReader):
         if currentValue == 0:
             return True
 
-        return not any(i.nextLine[self.idx] <= currentValue for i in self)
+        return all(i.nextLine[self.idx] > currentValue for i in self)
 
     def getInitialValue(self):
         for i in self:
@@ -269,8 +266,7 @@ class ArrayMultiReader(MultiReader):
 
     def currentLine(self):
         """Aggregates currentLines information."""
-        res = []
-        res.extend(list(i.currentLine[1:] for i in self))
+        res = [i.currentLine[1:] for i in self]
         return numpy.hstack(res)
 
 class VArrayMultiReader(ArrayMultiReader, VMultiReader):
@@ -311,8 +307,11 @@ def alignData(data):
         res.append(data.align(currentValue))
         currentValue = data.newCurrentValue()
 
-    return (numpy.vstack(res), numpy.array(list(i.nextLine[idxEvals] for i in data)),
-            numpy.array(list(i.nextLine[idxF] for i in data)))
+    return (
+        numpy.vstack(res),
+        numpy.array([i.nextLine[idxEvals] for i in data]),
+        numpy.array([i.nextLine[idxF] for i in data]),
+    )
     # Hack: at this point nextLine contains all information on the last line
     # of the data.
 

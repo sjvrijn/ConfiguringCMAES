@@ -16,8 +16,7 @@ def do(dirnames):
     for dirname in dirnames:
         if not os.path.exists(dirname):
             os.mkdir(dirname)
-        filenames = []
-        filenames.append(glob.glob(os.path.join(dirname, '*_f*')))
+        filenames = [glob.glob(os.path.join(dirname, '*_f*'))]
         filenames.append(glob.glob(os.path.join(dirname, '*_ert*')))
         filenames.append(glob.glob(os.path.join(dirname, '*allerts.*')))
         #filenames is a list of 3 lists of files
