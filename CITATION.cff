@@ -6,7 +6,7 @@ authors:
   affiliation: "Leiden University"
   orcid: "https://orcid.org/0000-0001-6159-041X"
 title: "Github repository: Configurable CMA-ES Experiments"
-url: "https://github.com/sjvrijn/cma-es-configuration-data-mining"
+url: "https://github.com/sjvrijn/ConfiguringCMAES"
 license: MIT
 preferred-citation:
   type: conference-paper
